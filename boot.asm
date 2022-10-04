@@ -1,3 +1,5 @@
+; DO NOT MODIFY!
+BITS 64
 
 MALIGN EQU 1 << 0
 MEMINFO EQU 1 << 1
@@ -15,8 +17,15 @@ ALIGN 4
 	DD CHECKSUM
 
 section .bss
-	ALIGN 16
-	stack_bottom RESB 16384  ; 16 kB
+ALIGN 16
+	; protected memory section.
+	protect_bottom:
+		RESB 4096   ; 4 kiB
+	protect_top:
+	; global stack.
+	stack_bottom:
+		RESB 65536  ; 64 kiB
+	stack_top:
 
 
 section .text
@@ -24,6 +33,8 @@ section .text
 
 _start:
 	
+	NOP
+	MOV RSP, stack_top
 	CALL Kernel_Start
 	
 	CLI
